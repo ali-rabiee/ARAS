@@ -64,7 +64,7 @@ The `config.py` file is the central configuration hub. Key parameters include:
 ```python
 # Testing parameters
 RENDER = True  # Set to True to visualize the environment
-modelPath = "./models/DQNBaseline_v7_bs64_ss4_rb30000_gamma0.5_decaylf20000_lr1e-05.pt"  # ARAS
+modelPath = "./models/ARAS_v7_bs64_ss4_rb30000_gamma0.5_decaylf20000_lr1e-05.pt"  # ARAS
 # modelPath = "./models/DQN_baseline_v2_bs64_ss4_rb30000_gamma0.3_decaylf5000_lr1e-05.pt"  # DQN
 SCENARIO = "dynamic_both"  # Options: "fixed", "dynamic_pickup", "dynamic_dropoff", "dynamic_both"
 EPISODE_NUMBER = 500
@@ -125,6 +125,38 @@ python run_hindsight.py
 ```
 
 Results will be saved in the `hindsight_results` directory.
+
+### System-Level Evaluation and Command-Noise Robustness (paper protocol)
+
+`testDQN.py` evaluates the policy with the goal supplied to the latent mask
+directly (a goal-identified upper bound). The evaluation reported in the paper
+runs the full pipeline -- windowed Bayesian goal inference and the confidence
+gate (`noisy_common.py`) -- in the loop, with optional corruption of the
+command token the controller observes:
+
+```bash
+# clean, end-to-end (paper Table I)
+python test_noisy.py --method ARAS --scenario fixed --p 0.0
+
+# 10% misdecoded commands (paper Fig. and Supplementary Table SV)
+python test_noisy.py --method ARAS --scenario dynamic_both --kind flip --p 0.10
+python test_noisy.py --method HO   --scenario dynamic_both --kind drop --p 0.10
+```
+
+`--kind flip` replaces a token with an incorrect value, `--kind drop` with
+neutral. Results (per-episode metrics, gate-open fraction, and goal-inference
+accuracy) are saved in `noise_results/`; the JSONs backing the paper are
+committed there.
+
+Because the confidence gate withholds the goal mask when belief is diffuse,
+the deployed policy is the shipped `models/ARAS_v8_inference.pt`, produced by
+fine-tuning the original checkpoint for 5,000 episodes with inference in the
+loop (clean commands):
+
+```bash
+python finetune_inference.py            # reproduces ARAS_v8_inference.pt
+python finetune_variants.py --help      # noise/scenario-randomized variants (all performed worse)
+```
 
 ## Models
 

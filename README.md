@@ -13,10 +13,9 @@
 
 ARAS (Adaptive Reinforcement learning for Amplification of limited inputs in Shared autonomy) is a framework designed to assist users with severe mobility impairments in controlling robotic systems through limited inputs. By leveraging deep reinforcement learning, ARAS can amplify minimal user inputs into complex, goal-directed robotic movements while adapting to the user's intentions in real-time.
 
-This repository implements three approaches for shared autonomy control:
+This repository implements two approaches for shared autonomy control:
 1. **ARAS**: Our novel approach using latent space representations and adaptive goal inference
-2. **DQN Baseline**: A standard deep Q-network implementation with raw inputs (baseline)
-3. **Hindsight Optimization (HO)**: A belief-based optimization strategy for action selection (baseline)
+2. **Hindsight Optimization (HO)**: A belief-based optimization strategy for action selection (baseline)
 
 ## Key Features
 
@@ -37,8 +36,10 @@ This repository implements three approaches for shared autonomy control:
 - **`utils.py`**: Utility functions for data processing, visualization, and more
 - **`trainDQN.py`**: Script for training DQN-based models (both ARAS and baseline)
 - **`testDQN.py`**: Evaluation script for trained DQN models
-- **`run_hindsight.py`**: Implementation and evaluation of Hindsight 
 - **`hindsight_optimizer.py`**: Implementation of the Hindsight Optimization algorithm
+- **`noisy_common.py`**: Bayesian goal inference, confidence gate, and command-noise models
+- **`test_noisy.py`**: End-to-end evaluation of ARAS and HO (paper protocol)
+- **`finetune_inference.py`**: Fine-tuning with inference in the loop (produces the deployed checkpoint)
 
 ## Installation
 
@@ -118,13 +119,13 @@ Test results will be saved in the model-specific results directory.
 
 ### Hindsight Optimization
 
-To run the Hindsight Optimization approach: (Select the Scenario in config.py)
+HO is evaluated through the same end-to-end harness:
 
 ```bash
-python run_hindsight.py
+python test_noisy.py --method HO --scenario fixed --p 0.0
 ```
 
-Results will be saved in the `hindsight_results` directory.
+Results are saved in the `noise_results` directory.
 
 ### System-Level Evaluation and Command-Noise Robustness (paper protocol)
 
@@ -168,10 +169,6 @@ Key differences from baseline:
 - Uses segmentation masks as input instead of raw grayscale images
 - Enhanced ability to identify objects of interest and relevant goal locations
 - Better performance in dynamic environments where goals change during execution
-
-### DQN Baseline
-
-The DQN baseline uses raw grayscale images as input to the neural network. It serves as a comparison point for the more advanced ARAS model.
 
 ### Hindsight Optimization (HO)
 

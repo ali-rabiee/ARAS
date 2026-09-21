@@ -6,7 +6,7 @@
 
 ## Demo
 
-![Click here to watch the video!](https://github.com/ali-rabiee/amplification_DRL/blob/main/demo/amplification_demo.gif?raw=true)
+![Click here to watch the video!](demo/amplification_demo.gif)
 
 
 ## Overview
@@ -110,7 +110,7 @@ python testDQN.py
 ```
 
 Before testing, configure in `config.py`:
-- Select the model to test by setting `modelPath` to either the ARAS or DQN baseline model
+- Select the checkpoint with `modelPath` (deployed `ARAS_v8_inference.pt`, or the pre-fine-tune `ARAS_v7` checkpoint for the goal-identified upper bound)
 - Choose the scenario type with `SCENARIO` ("fixed", "dynamic_pickup", "dynamic_dropoff", or "dynamic_both")
 - Set `RENDER = True` to visualize the environment during testing
 - Adjust `EPISODE_NUMBER` to control the number of test episodes
